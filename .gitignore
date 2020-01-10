@@ -1,0 +1,5 @@
+.vs/DemoRabbitMqMicroService/
+Contract/bin/
+Contract/obj/
+Producer/obj/
+Consumer/obj/
