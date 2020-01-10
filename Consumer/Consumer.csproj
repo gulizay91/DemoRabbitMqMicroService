@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit.AspNetCore" Version="6.0.1" />
-    <PackageReference Include="MassTransit.RabbitMQ" Version="6.0.1" />
+    <PackageReference Include="NServiceBus" Version="7.2.0" />
+    <PackageReference Include="NServiceBus.RabbitMQ" Version="5.1.2" />
   </ItemGroup>
 
 </Project>

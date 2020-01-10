@@ -1,13 +1,10 @@
-using Contract;
-using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
+using NServiceBus;
 
 namespace ClientUI
 {
@@ -32,22 +29,15 @@ namespace ClientUI
         configuration.RootPath = "ClientApp/build";
       });
 
-      var bus = Bus.Factory.CreateUsingRabbitMq(cfg =>
-      {
-        var host = cfg.Host(new Uri("rabbitmq://localhost/"), h => { });
-      });
+      var endpointConfiguration = new EndpointConfiguration("ClientUI");
+      var transport =  endpointConfiguration.UseTransport<RabbitMQTransport>();
 
-      services.AddSingleton<IPublishEndpoint>(bus);
-      services.AddSingleton<ISendEndpointProvider>(bus);
-      services.AddSingleton<IBus>(bus);
+      var routing = transport.Routing();
+      //routing.RouteToEndpoint(typeof(PlaceOrder), "Sales");
 
-      var timeout = TimeSpan.FromSeconds(10);
-      var serviceAddress = new Uri("rabbitmq://localhost/rabbitmq-service");
+      endpointConfiguration.SendFailedMessagesTo("error");
 
-      services.AddScoped<IRequestClient<Command, Event>>(x =>
-          new MessageRequestClient<Command, Event>(x.GetRequiredService<IBus>(), serviceAddress, timeout, timeout));
-
-      bus.Start();
+      //services.AddNServiceBus(endpointConfiguration);
 
     }
 

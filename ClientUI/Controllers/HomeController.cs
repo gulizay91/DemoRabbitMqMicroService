@@ -1,23 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Dynamic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Contract;
-using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using NServiceBus;
 
 namespace ClientUI.Controllers
 {
   public class HomeController : Controller
   {
-    
-    private readonly IRequestClient<Command, Event> _requestClient;
 
-    public HomeController(IRequestClient<Command, Event> requestClient)
+    IEndpointInstance _endpointInstance;
+    static int messagesSent;
+
+    public HomeController(IEndpointInstance endpointInstance)
     {
-      _requestClient = requestClient;
+      _endpointInstance = endpointInstance;
     }
 
     public IActionResult Index()
@@ -25,19 +25,23 @@ namespace ClientUI.Controllers
       return View();
     }
 
-    //[HttpPut("{id}")]
-    public async Task<IActionResult> Submit()//(string id, CancellationToken cancellationToken)
+    //[HttpPost]
+    public async Task<IActionResult> Submit(string message = "")
     {
-      try
-      {
-        //Event result = await _requestClient.Request(new { SendMessage = id.ToString() }, cancellationToken);
-        Event result = await _requestClient.Request(new { SendMessage = "123" });
-        return Accepted(result.ReceiveMessage);
-      }
-      catch (RequestTimeoutException exception)
-      {
-        return StatusCode((int)HttpStatusCode.RequestTimeout);
-      }
+      var Id = Guid.NewGuid();
+      message = message ?? "message content";
+      var command = new Command { Id = Id, SendTime= DateTime.Now, SendMessage = message };
+
+      // Send the command
+      await _endpointInstance.Send(command)
+          .ConfigureAwait(false);
+
+      dynamic model = new ExpandoObject();
+      model.Id = Id;
+      model.Message = message;
+      model.MessagesSent = Interlocked.Increment(ref messagesSent);
+
+      return View(model);
     }
 
   }
