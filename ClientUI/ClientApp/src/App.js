@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Layout } from './components/Layout';
 import { Home } from './components/Home';
+import { ServiceBus } from './components/ServiceBus';
+import { Messages } from './components/Messages';
 import { FetchData } from './components/FetchData';
 import { Counter } from './components/Counter';
 
@@ -14,6 +16,8 @@ export default class App extends Component {
     return (
       <Layout>
         <Route exact path='/' component={Home} />
+        <Route path='/servicebus' component={ServiceBus} />
+        <Route path='/messages' component={Messages} />
         <Route path='/counter' component={Counter} />
         <Route path='/fetch-data' component={FetchData} />
       </Layout>

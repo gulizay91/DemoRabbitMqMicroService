@@ -9,6 +9,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NServiceBus;
 
+using FireSharp.Config;
+using FireSharp.Interfaces;
+using FireSharp.Response;
+using Common.Models;
+using Newtonsoft.Json;
+
 namespace ClientUI.Controllers
 {
   [Route("api/[controller]/[action]")]
@@ -17,10 +23,18 @@ namespace ClientUI.Controllers
   {
     IEndpointInstance _endpointInstance;
     static int messagesSent;
+    IFirebaseConfig config = new FirebaseConfig
+    {
+      AuthSecret = "L1zUs0oNlIPmcAxPxg1NhHql2BEIxygTzqH8zoyl",
+      BasePath = "https://chat-75632.firebaseio.com/"
+    };
+
+    IFirebaseClient client;
 
     public ServiceBusController(IEndpointInstance endpointInstance)
     {
       _endpointInstance = endpointInstance;
+      client = new FireSharp.FirebaseClient(config);
     }
 
     [HttpGet]
@@ -40,6 +54,36 @@ namespace ClientUI.Controllers
       model.MessagesSent = Interlocked.Increment(ref messagesSent);
 
       return model;
+    }
+
+    [HttpGet]
+    public async Task<IEnumerable<FireBaseDataModel>> GetMessages()
+    {
+      if(client == null)
+        client = new FireSharp.FirebaseClient(config);
+      List<FireBaseDataModel> resultList = new List<FireBaseDataModel>();
+
+      if (client != null)
+      {
+        var response = await client.GetTaskAsync("Messages");
+        var resultJson = response.Body;
+        dynamic dynJson = JsonConvert.DeserializeObject(resultJson);
+        foreach (var item in dynJson)
+        {
+          var nodeItem = item.Value;
+          var data = new FireBaseDataModel
+          {
+            Id = nodeItem.Id,
+            MessageContent = nodeItem.MessageContent,
+            MessageUser = nodeItem.MessageUser,
+            MessageDate = nodeItem.MessageDate
+          };
+
+          resultList.Add(data);
+        }
+      }
+
+      return resultList.AsEnumerable();
     }
   }
 }

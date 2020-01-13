@@ -10,3 +10,6 @@ Consumer/bin/
 .logs/
 .db/
 .audit-db/
+Common/obj/
+node_modules/
+Common/bin/
