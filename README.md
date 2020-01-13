@@ -1,2 +1,2 @@
 # DemoRabbitMqMicroService
-RabbitMq MassTransit MicroService
+RabbitMq ServiceBus MicroService
