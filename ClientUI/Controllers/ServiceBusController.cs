@@ -1,34 +1,33 @@
-﻿using System.Dynamic;
+﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
 using System.Threading;
-using System;
 using System.Threading.Tasks;
 using Contract;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NServiceBus;
 
 namespace ClientUI.Controllers
 {
-  public class HomeController : Controller
+  [Route("api/[controller]/[action]")]
+  [ApiController]
+  public class ServiceBusController : ControllerBase
   {
     IEndpointInstance _endpointInstance;
     static int messagesSent;
 
-    public HomeController(IEndpointInstance endpointInstance)
+    public ServiceBusController(IEndpointInstance endpointInstance)
     {
       _endpointInstance = endpointInstance;
     }
 
     [HttpGet]
-    public ActionResult Index()
-    {
-      return View();
-    }
-
-    [HttpPost]
-    public async Task<ActionResult> Submit()
+    public async Task<object> Submit(string message = "")
     {
       var Id = Guid.NewGuid();
-      var message = "message content";
+      message = string.IsNullOrEmpty(message) ? "message content" : message;
       var command = new CommandMessage { Id = Id, SendTime = DateTime.Now, SendMessage = message };
 
       // Send the command
@@ -40,13 +39,7 @@ namespace ClientUI.Controllers
       model.Message = message;
       model.MessagesSent = Interlocked.Increment(ref messagesSent);
 
-      return View(model);
+      return model;
     }
-
-    public string Test()
-    {
-      return "test";
-    }
-
   }
 }

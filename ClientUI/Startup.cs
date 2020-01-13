@@ -1,3 +1,4 @@
+using Contract;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NServiceBus;
+using System;
 
 namespace ClientUI
 {
@@ -20,7 +22,6 @@ namespace ClientUI
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-
       services.AddControllersWithViews();
 
       // In production, the React files will be served from this directory
@@ -29,16 +30,27 @@ namespace ClientUI
         configuration.RootPath = "ClientApp/build";
       });
 
-      var endpointConfiguration = new EndpointConfiguration("ClientUI");
+      var endpointConfiguration = new EndpointConfiguration("ClientUI.Endpoint");
       var transport =  endpointConfiguration.UseTransport<RabbitMQTransport>();
+      transport.UseConventionalRoutingTopology();
+      transport.ConnectionString("host=localhost");
+      endpointConfiguration.EnableInstallers();
 
       var routing = transport.Routing();
-      //routing.RouteToEndpoint(typeof(PlaceOrder), "Sales");
+      routing.RouteToEndpoint(typeof(CommandMessage), "SendMessage.Endpoint");
 
       endpointConfiguration.SendFailedMessagesTo("error");
+      endpointConfiguration.AuditProcessedMessagesTo("audit");
+      
+      //endpointConfiguration.SendHeartbeatTo("Particular.ServiceControl");
+      //var metrics = endpointConfiguration.EnableMetrics();
+      //metrics.SendMetricDataToServiceControl("Particular.Monitoring", TimeSpan.FromMilliseconds(500));
 
-      //services.AddNServiceBus(endpointConfiguration);
+      //var endpointInstance = Endpoint.Start(endpointConfiguration).ConfigureAwait(false);
+      var endpointInstance = Endpoint.Start(endpointConfiguration).GetAwaiter().GetResult();
 
+      // Add to Dependency Injection Container        
+      services.AddScoped(typeof(IEndpointInstance), x => endpointInstance);
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

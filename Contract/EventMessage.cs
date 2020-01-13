@@ -5,8 +5,8 @@ using System.Text;
 
 namespace Contract
 {
-  public class Command : BaseMessage, ICommand
+  public class EventMessage : BaseMessage, IEvent
   {
-    public string SendMessage { get; set; }
+    public string ReceiveMessage { get; set; }
   }
 }

@@ -3,3 +3,10 @@ Contract/bin/
 Contract/obj/
 Producer/obj/
 Consumer/obj/
+Platform/bin/
+Producer/bin/
+Platform/obj/
+Consumer/bin/
+.logs/
+.db/
+.audit-db/
