@@ -19,6 +19,7 @@ export class Messages extends Component {
   handleChange(event) {
     this.setState({ message: event.target.value });
   }
+
   async handleSubmit(event) {
     event.preventDefault();
     const response = await fetch('https://localhost:44381/api/servicebus/Submit/?message=' + this.state.message);
@@ -26,6 +27,13 @@ export class Messages extends Component {
     //alert('A message was submitted: ' + this.state.message);
     this.setState({ model: data });
   }
+
+  //async sendMessage(message) {
+  //  const response = await fetch('https://localhost:44381/api/servicebus/Submit/?message=' + message);
+
+  //  const data = await response.json();
+  //  this.setState({ model: data });
+  //}
 
   static renderMessages(messages) {
     return (
