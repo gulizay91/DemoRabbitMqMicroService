@@ -13,4 +13,4 @@ Consumer/bin/
 Common/obj/
 node_modules/
 Common/bin/
-ClientUI/ClientApp/src/util/config.js
+ClientUI/ClientApp/src/util/firebaseconfig.js
