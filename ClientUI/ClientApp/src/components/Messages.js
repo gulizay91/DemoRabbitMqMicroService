@@ -1,77 +1,20 @@
 ﻿import React, { Component } from 'react';
-import { FIREBASE_CONFIG } from '../util/firebaseconfig';
-import firebase from 'firebase/app';
-import 'firebase/database';
-
 
 export class Messages extends Component {
   static displayName = Messages.name;
 
   constructor(props) {
     super(props);
-    this.app = firebase.initializeApp(FIREBASE_CONFIG);//start a firebase application
-    this.database = this.app.database().ref().child('messages');//Database 
-
     this.state = { messages: [], loading: true, message: "", model: {} };
 
     //function binding operation
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    //this.sendMessage = this.sendMessage.bind(this);
-    //this.removeMessage = this.removeMessage.bind(this);
   }
 
   componentDidMount() {
     this.messagesData();
   }
-
-  /*
-  componentWillMount() {
-    const previousMessages = this.state.messages;
-    //add new message
-    this.database.on('child_added', snap => {
-      previousMessages.push({
-        id: snap.key,
-        messageUser: snap.val().messageUser,
-        messageContent: snap.val().messageContent,
-        messageDate: snap.val().messageDate
-      })
-      //added after messages list refresh
-      this.setState({
-        notes: previousMessages
-      })
-    })
-
-    //delete message
-    this.database.on('child_removed', snap => {
-      //basic logic find field id in firabase
-      for (var i = 0; i < previousMessages.length; i++) {
-        if (previousMessages[i].id === snap.key) {
-          previousMessages.splice(i, 1);
-        }
-      }
-      this.setState({
-        messages: previousMessages
-      })
-    })
-  }
-
-
-  sendMessage(message) {
-    this.database.push().set({ nessageUser: message.nessageUser, messageContent: message.messageContent, messageDate: message.messageDate });
-  }
-
-  removeMessage(messageId) {
-    this.database.child(messageId).remove();
-  }
-  */
-
-  //async sendMessage(message) {
-  //  const response = await fetch('https://localhost:44381/api/servicebus/Submit/?message=' + message);
-
-  //  const data = await response.json();
-  //  this.setState({ model: data });
-  //}
 
   handleChange(event) {
     this.setState({ message: event.target.value });
