@@ -7,6 +7,6 @@ namespace Contract
 {
   public class EventMessage : BaseMessage, IEvent
   {
-    public string ReceiveMessage { get; set; }
+    public string PublishMessage { get; set; }
   }
 }
