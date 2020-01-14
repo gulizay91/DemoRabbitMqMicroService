@@ -21,7 +21,10 @@ namespace Producer
 
       var sendMessage = new EventMessage
       {
-        Id = message.Id
+        Id = message.Id,
+        PublishMessage = message.SendMessage,
+        SendTime = message.SendTime,
+        PublisheTime = DateTime.Now
       };
 
       log.Info($"Publishing EventMessage, Id = {message.Id}");
