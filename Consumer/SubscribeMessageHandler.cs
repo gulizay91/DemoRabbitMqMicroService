@@ -47,7 +47,7 @@ namespace Consumer
         {
           Id = message.Id,
           MessageUser = "sender user",
-          MessageContent = message.ReceiveMessage,
+          MessageContent = message.PublishMessage,
           MessageDate = message.SendTime
         };
 

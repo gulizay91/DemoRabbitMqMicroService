@@ -83,7 +83,7 @@ namespace ClientUI.Controllers
         }
       }
 
-      return resultList.OrderBy(r => r.MessageDate).AsEnumerable();
+      return resultList.OrderByDescending(r => r.MessageDate).Take(10).AsEnumerable();
     }
   }
 }
